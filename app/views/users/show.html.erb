@@ -1,0 +1,101 @@
+<h1><%= @user.username %></h1>
+
+<dl>
+  <!-- <dt>ID</dt>
+  <dd><%= @user.id %></dd> -->
+  <dt>Private</dt>
+  <dd><%= @user.private.to_s %></dd>
+  <dt>Followers</dt>
+  <dd><%= @user.followers.count %>
+  <% current_user = User.where({:id => session[:user_id]}).at(0)%>
+  <% if !session[:user_id].nil? and @user.id != session[:user_id] and !current_user.following.include?(@user) %>
+  <div>
+          <form action="/insert_follow_request" method="post">
+            <input type="hidden" name="query_recipient_id" value="<%= @user.id %>">
+
+            <button>
+              Follow
+            </button>
+          </form>
+    </div>
+  <% elsif !session[:user_id].nil? and @user.id != session[:user_id] and current_user.following.include?(@user) %>
+  <div>
+  <a href="/unfollow">Unfollow</a>
+  </div>
+  <% end %>
+  </dd>
+  <dt>Following</dt>
+  <dd><%= @user.following.count %></dd>
+
+  <% if session[:user_id].nil? or @user.id != session[:user_id]%>
+  <% else %>
+  <dt>Edit user</dt>
+  <dd>
+    <form action="/update_user/<%= @user.id %>" >
+      <label for="browser_username">Username</label>
+      <input id="browser_username" type="text" name="input_username" placeholder="Enter a username..." value="<%= @user.username %>">
+
+      <button>Update user</button>
+    </form>
+  </dd>
+  <% end %>
+</dl>
+
+<h2>Own photos (<%= @user.own_photos.count %>)</h2>
+
+<table border="1">
+  <tr>
+    <th>
+      Image
+    </th>
+
+    <th>
+      Owner
+    </th>
+
+    <th>
+      Caption
+    </th>
+
+    <th>
+      Posted
+    </th>
+
+    <th>
+      Likes
+    </th>
+
+    <th></th>
+  </tr>
+
+  <% @user.own_photos.each do |photo| %>
+  <tr>
+    <td>
+      <img src="<%= photo.image %>">
+    </td>
+
+    <td>
+      <%= photo.poster.username %>
+    </td>
+
+    <td>
+      <%= photo.caption %>
+    </td>
+
+    <td>
+      <%= distance_of_time_in_words(Time.now, photo.created_at) %>
+    </td>
+
+    <td>
+      <%= photo.likes.count %>
+    </td>
+    
+    <td>
+      <a href="/photos/<%= photo.id %>">
+        Show details
+      </a>
+    </td>
+  </tr>
+
+  <% end %>
+</table>

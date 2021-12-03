@@ -15,6 +15,56 @@
   </head>
 
   <body>
+  <ul>
+      <li>
+        <a href="/users">
+          All users
+        </a>
+      </li>
+      
+      <li>
+        <a href="/photos">
+          All public photos
+        </a>
+      </li>
+
+        <li>
+          <% if session[:user_id].nil? %>
+          <a href="/user_sign_in">
+            Sign in
+          </a>
+          <% else %>
+          <a href="/edit_user_profile">
+            <%= User.where({ :id => session[:user_id] }).at(0).username %>
+          </a>
+          <% end %>
+        </li>
+
+        <li>
+        <% if session[:user_id].nil? %>
+          <a href="/user_sign_up">
+            Sign up
+          </a>
+          <% else %>
+          <a href="/user_sign_out">
+            Sign out
+          </a>
+        <% end %>
+        </li>
+    </ul>
+
+    <% if notice.present? %>
+    <div style="border: thin green solid; color: green">
+    <%= notice %>
+    </div>
+    <% end %>
+
+    <% if alert.present? %>
+    <div style="border: thin red solid; color: red">
+    <%= alert %>
+    </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>
